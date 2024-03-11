@@ -3,6 +3,8 @@ import http from "http";
 import configObj from "./config/index.js";
 import dotenv from "dotenv";
 import apis from "./apis/index.js";
+import errorHandler from "./utils/errorHandler.js";
+import errorLogger from "./utils/errorLogger.js";
 
 dotenv.config();
 const config = configObj[process.env.NODE_ENV];
@@ -20,6 +22,9 @@ app.get("/", (_, res) => {
 });
 
 apis(app);
+
+// app.use(errorLogger);
+app.use(errorHandler);
 
 const port = process.env.PORT || config.port;
 app.server.listen(port, () => {
