@@ -3,6 +3,14 @@ class TaskService {
     this.model = model;
   }
 
+  async addTask(data) {
+    return await this.model.insert(data);
+  }
+
+  async editTask(id, data) {
+    return await this.model.update(id, data);
+  }
+
   async getAllTasks() {
     return await this.model.getAll();
   }
