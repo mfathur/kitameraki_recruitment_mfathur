@@ -1,5 +1,6 @@
 import express from "express";
 import http from "http";
+import cors from "cors";
 import configObj from "./config/index.js";
 import dotenv from "dotenv";
 import apis from "./apis/index.js";
@@ -13,6 +14,15 @@ const app = express();
 app.server = http.createServer(app);
 
 app.use(express.json());
+
+app.options("*", cors());
+app.use(
+  cors({
+    origin: config.corsOrigin,
+    exposedHeaders: config.corsHeader,
+    methods: config.corsAllowedMethods,
+  })
+);
 
 app.get("/", (_, res) => {
   res.send({
