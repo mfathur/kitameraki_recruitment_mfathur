@@ -23,7 +23,7 @@ app.get("/", (_, res) => {
 
 apis(app);
 
-// app.use(errorLogger);
+app.use(errorLogger);
 app.use(errorHandler);
 
 const port = process.env.PORT || config.port;

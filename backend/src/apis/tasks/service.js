@@ -6,6 +6,10 @@ class TaskService {
   async getAllTasks() {
     return await this.model.getAll();
   }
+
+  async getTaskBy(id) {
+    return await this.model.getBy(id);
+  }
 }
 
 export default TaskService;
