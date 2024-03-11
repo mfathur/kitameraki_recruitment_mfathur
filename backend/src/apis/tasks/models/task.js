@@ -18,6 +18,15 @@ class Task {
     const task = this.tasks[index];
     return task;
   }
+
+  async deleteBy(id) {
+    const index = this.tasks.findIndex((task) => task.id === id);
+    if (index === -1) {
+      throw new NotFoundError("task not found");
+    }
+
+    this.tasks.splice(index, 1);
+  }
 }
 
 const task = new Task();
