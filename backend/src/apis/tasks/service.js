@@ -11,8 +11,8 @@ class TaskService {
     return await this.model.update(id, data);
   }
 
-  async getAllTasks() {
-    return await this.model.getAll();
+  async getPaginatedTasks(page, pageSize) {
+    return await this.model.getPaginated(page, pageSize);
   }
 
   async getTaskBy(id) {

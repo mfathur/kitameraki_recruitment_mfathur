@@ -5,8 +5,19 @@ class Task {
     this.tasks = tasks;
   }
 
-  async getAll() {
-    return this.tasks;
+  async getPaginated(page, pageSize) {
+    const totalData = this.tasks.length;
+    const data = {
+      tasks: this.tasks.slice((page - 1) * pageSize, page * pageSize),
+      metadata: {
+        page_count: Math.ceil(totalData / pageSize),
+        total_count: totalData,
+        page: page,
+        per_page: pageSize,
+      },
+    };
+
+    return data;
   }
 
   async getBy(id) {
