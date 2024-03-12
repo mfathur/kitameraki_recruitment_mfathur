@@ -1,36 +1,39 @@
 import { FaGear, FaPlus } from "react-icons/fa6";
 import ItemTask from "../components/ItemTask";
-
-// dummy data
-const tasks: Task[] = [
-  {
-    id: "1",
-    title: "lorem ipsum",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Lorem massa etiam eget eget in sagittis sagittis nulla.",
-  },
-  {
-    id: "2",
-    title: "lorem ipsum",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Lorem massa etiam eget eget in sagittis sagittis nulla.",
-  },
-  {
-    id: "3",
-    title: "lorem ipsum",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Lorem massa etiam eget eget in sagittis sagittis nulla.",
-  },
-];
+import { useEffect, useState } from "react";
+import axiosClient from "../network/apiClient";
+import Spinner from "../components/Spinner";
 
 const HomePage = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | unknown>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    const getPaginatedTasks = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosClient.get("/tasks");
+
+        const payload = await response.data;
+        setTasks(payload.data as Task[]);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getPaginatedTasks();
+  }, []);
+
   return (
     <main className="p-5 flex flex-col">
       <div className="text-center mt-8">
         <h1 className="font-bold text-4xl">Tasks</h1>
         <p className="mt-2">Let's get things done!</p>
       </div>
-      <div className="mt-14 self-end flex items-center gap-3 mx-20">
+      <div className="mt-14 self-center flex items-center gap-3 ">
         <button className="bg-blue-500 py-2 px-4 rounded-full text-white font-medium flex items-center gap-2 hover:bg-blue-400 transition-all">
           <FaPlus />
           Add Task
@@ -39,11 +42,16 @@ const HomePage = () => {
           <FaGear />
         </button>
       </div>
-      <div className="flex gap-4 flex-wrap mt-10 justify-center ">
-        {tasks.map((task, idx) => (
-          <ItemTask key={`${idx}-${task.id}`} task={task} />
-        ))}
-      </div>
+      {loading && !error ? (
+        <Spinner className="self-center mt-24" />
+      ) : (
+        <div className="flex gap-4 flex-wrap mt-10 justify-center ">
+          {tasks.map((task, idx) => (
+            <ItemTask key={`${idx}-${task.id}`} task={task} />
+          ))}
+        </div>
+      )}
+      {!loading && error ? (error as string) : null}
     </main>
   );
 };
