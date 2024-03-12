@@ -5,3 +5,9 @@ type RouterType = {
   path: string;
   element: JSX.Element;
 };
+
+type Task = {
+  id: string;
+  title: string;
+  description: string;
+};
