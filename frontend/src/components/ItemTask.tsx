@@ -20,7 +20,7 @@ const ItemTask = ({
   };
 
   return (
-    <div className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow ">
+    <div className="block md:max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow w-full">
       <div className="mb-2 flex justify-between gap-4">
         <h5 className=" text-2xl font-bold tracking-tight text-gray-900 ">
           {task.title}

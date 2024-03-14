@@ -55,7 +55,7 @@ const HomePage = () => {
       </div>
       <div className="mt-14 self-center flex items-center gap-3 ">
         <button
-          className="bg-blue-500 py-2 px-4 rounded-full text-white font-medium flex items-center gap-2 hover:bg-blue-400 transition-all"
+          className="btn-contained py-2 px-4 rounded-full"
           onClick={() => {
             setIsCreateTaskModalOpened(true);
           }}

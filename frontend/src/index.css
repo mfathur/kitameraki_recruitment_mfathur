@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.btn-contained {
+  @apply bg-primary text-white font-medium hover:bg-blue-400 transition-all items-center  flex gap-2;
+}
