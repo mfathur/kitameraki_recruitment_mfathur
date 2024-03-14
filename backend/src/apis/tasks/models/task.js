@@ -1,3 +1,4 @@
+import { dummyData } from "../../../utils/dummyData.js";
 import NotFoundError from "../../../utils/errors/NotFoundError.js";
 import { nanoid } from "nanoid";
 class Task {
@@ -57,6 +58,6 @@ class Task {
   }
 }
 
-const task = new Task();
+const task = new Task(dummyData);
 
 export default task;
