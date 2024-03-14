@@ -12,8 +12,8 @@ class Task {
       metadata: {
         page_count: Math.ceil(totalData / pageSize),
         total_count: totalData,
-        page: page,
-        per_page: pageSize,
+        page: Number(page),
+        per_page: Number(pageSize),
       },
     };
 
