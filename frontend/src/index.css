@@ -3,5 +3,9 @@
 @tailwind utilities;
 
 .btn-contained {
-  @apply bg-primary text-white font-medium hover:bg-blue-400 transition-all items-center  flex gap-2;
+  @apply bg-primary text-white font-medium hover:bg-blue-400 transition-all;
+}
+
+.btn-outlined {
+  @apply text-primary border border-primary transition-all hover:bg-blue-300 font-medium hover:text-blue-50;
 }
