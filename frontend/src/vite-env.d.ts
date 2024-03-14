@@ -11,3 +11,10 @@ type Task = {
   title: string;
   description: string;
 };
+
+type PaginationMetadata = {
+  page_count: int;
+  total_count: int;
+  page: int;
+  per_page: int;
+};
