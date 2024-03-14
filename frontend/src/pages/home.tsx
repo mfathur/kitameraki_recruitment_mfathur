@@ -1,10 +1,11 @@
-import { FaPlus } from "react-icons/fa6";
+import { FaGear, FaPlus } from "react-icons/fa6";
 import ItemTask from "../components/ItemTask";
 import { useState, useCallback, useRef, useEffect } from "react";
 import Spinner from "../components/Spinner";
 import CreateTaskModal from "../components/CreateTaskModal";
 import UpdateTaskModal from "../components/UpdateTaskModal";
 import usePaginatedTasks from "../hooks/usePaginatedTasks";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const [page, setPage] = useState(1);
@@ -47,6 +48,8 @@ const HomePage = () => {
     [isLoading, hasMore]
   );
 
+  const navigate = useNavigate();
+
   return (
     <main className="p-5 flex flex-col">
       <div className="text-center mt-8 ">
@@ -55,13 +58,21 @@ const HomePage = () => {
       </div>
       <div className="mt-14 self-center flex items-center gap-3 ">
         <button
-          className="btn-contained py-2 px-4 rounded-full"
+          className="btn-contained py-2 px-4 rounded-full items-center flex gap-x-2"
           onClick={() => {
             setIsCreateTaskModalOpened(true);
           }}
         >
           <FaPlus />
           Add Task
+        </button>
+        <button
+          onClick={() => {
+            navigate("/setting");
+          }}
+          className="btn-outlined p-3 rounded-full border border-blue-500 font-medium hover:bg-blue-300 transition-all"
+        >
+          <FaGear />
         </button>
       </div>
 
