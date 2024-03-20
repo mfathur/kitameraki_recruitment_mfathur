@@ -18,3 +18,7 @@ type PaginationMetadata = {
   page: int;
   per_page: int;
 };
+
+type FormFieldMetadata = {
+  type: string;
+};
