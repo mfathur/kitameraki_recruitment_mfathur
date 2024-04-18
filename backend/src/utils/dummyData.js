@@ -1,3 +1,19 @@
+export const dummyFormOptionalFormat = {
+  0: [
+    {
+      type: "spin",
+    },
+    {
+      type: "date",
+    },
+  ],
+  1: [
+    {
+      type: "text",
+    },
+  ],
+};
+
 export const dummyData = [
   {
     id: "UxiwL6Yr6zFpnZmM",
