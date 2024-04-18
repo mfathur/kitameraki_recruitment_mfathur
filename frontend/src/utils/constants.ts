@@ -3,3 +3,8 @@ export const FORM_TYPES = {
   DATE: "date",
   TEXT: "text",
 };
+
+export enum DropPositionType {
+  LEFT = "left",
+  RIGHT = "right",
+}

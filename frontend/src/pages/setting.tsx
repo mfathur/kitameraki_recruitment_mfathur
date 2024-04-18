@@ -1,6 +1,6 @@
 import { Field, Input } from "@fluentui/react-components";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect } from "react";
 
 import { Bs123 } from "react-icons/bs";
 import { BsCalendar2Event } from "react-icons/bs";
@@ -8,15 +8,38 @@ import { FiSliders } from "react-icons/fi";
 import { FaArrowLeft } from "react-icons/fa6";
 
 import ItemFormComponent from "../components/ItemFormComponent";
-import OptionalFields from "../components/OptionalFields";
 import DroppableZone from "../components/DroppableZone";
 
 import { FORM_TYPES } from "../utils/constants";
+import OptionalFields from "../components/OptionalFields";
+import useFormSetting from "../hooks/useFormSetting";
 
 const SettingPage = () => {
   const navigate = useNavigate();
 
-  const [fields, setFields] = useState<FormFieldMetadata[]>([]);
+  const {
+    fields,
+    isLoading,
+    error,
+    isSaveSucceed,
+    addFieldOnNewRow,
+    addFieldOnExistingRow,
+    saveFormOptionalFormat,
+  } = useFormSetting();
+
+  useEffect(() => {
+    // if error exists, show alert dialog
+    if (error) {
+      alert(error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    // show alert
+    if (isSaveSucceed) {
+      alert("Optional form field saved successfully");
+    }
+  }, [isSaveSucceed]);
 
   return (
     <main className="flex min-h-screen ">
@@ -53,11 +76,13 @@ const SettingPage = () => {
             <FaArrowLeft />
             Back To Home
           </button>
-          {fields.length > 0 ? (
-            <button className="btn-contained rounded-full px-4 py-2 w-20">
-              Save
-            </button>
-          ) : null}
+
+          <button
+            className="btn-contained rounded-full px-4 py-2 w-20 disabled:bg-blue-200"
+            onClick={saveFormOptionalFormat}
+          >
+            Save
+          </button>
         </div>
 
         <h1 className="text-3xl font-bold">Form Setting</h1>
@@ -73,32 +98,23 @@ const SettingPage = () => {
 
         <p className="font-bold my-4">Optional Fields</p>
 
-        {fields.length === 0 && (
-          <DroppableZone
-            className="min-h-60"
-            onDrop={(field: FormFieldMetadata) => {
-              setFields((prev) => [...prev, field]);
-            }}
-          />
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            {fields.size === 0 && (
+              <DroppableZone className="min-h-60" onDrop={addFieldOnNewRow} />
+            )}
+
+            <div className="relative w-full min-h-16 ">
+              <OptionalFields onDrop={addFieldOnExistingRow} fields={fields} />
+            </div>
+
+            {fields.size > 0 ? (
+              <DroppableZone onDrop={addFieldOnNewRow} className="mt-4" />
+            ) : null}
+          </>
         )}
-
-        <div className="relative w-full min-h-16 ">
-          <OptionalFields
-            onDrop={(field: FormFieldMetadata) => {
-              setFields((prev) => [...prev, field]);
-            }}
-            fields={fields}
-          />
-        </div>
-
-        {fields.length > 0 ? (
-          <DroppableZone
-            onDrop={(field: FormFieldMetadata) => {
-              setFields((prev) => [...prev, field]);
-            }}
-            className="mt-4"
-          />
-        ) : null}
       </div>
     </main>
   );

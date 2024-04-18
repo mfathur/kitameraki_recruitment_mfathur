@@ -3,13 +3,14 @@ import { Field } from "@fluentui/react-components";
 import DroppableZone from "./DroppableZone";
 import { useRef, useState } from "react";
 import { useDrop } from "react-dnd";
-import { FORM_TYPES } from "../utils/constants";
+import { DropPositionType, FORM_TYPES } from "../utils/constants";
 
 type Props = {
-  onDrop: (field: FormFieldMetadata) => void;
+  onDrop: (field: FormFieldMetadata, dropPosition: DropPositionType) => void;
+  isAbleToAddField: boolean;
 };
 
-const DatePickerComponent = ({ onDrop }: Props) => {
+const DatePickerComponent = ({ onDrop, isAbleToAddField }: Props) => {
   const [showRightDroppableZone, setShowRightDroppableZone] = useState(false);
   const [showLeftDroppableZone, setShowLeftDroppableZone] = useState(false);
 
@@ -18,6 +19,10 @@ const DatePickerComponent = ({ onDrop }: Props) => {
   const [, drop] = useDrop({
     accept: [FORM_TYPES.DATE, FORM_TYPES.SPIN, FORM_TYPES.TEXT],
     hover(_, monitor) {
+      if (!isAbleToAddField) {
+        return;
+      }
+
       if (!ref.current) {
         return;
       }
@@ -47,14 +52,25 @@ const DatePickerComponent = ({ onDrop }: Props) => {
 
   return (
     <div ref={ref} className="flex gap-x-4 items-end">
-      {showLeftDroppableZone ? <DroppableZone onDrop={onDrop} /> : null}
+      {showLeftDroppableZone ? (
+        <DroppableZone
+          onDrop={(field: FormFieldMetadata) => {
+            onDrop(field, DropPositionType.LEFT);
+          }}
+        />
+      ) : null}
       <div className="w-full">
         <Field className="w-full" label="Select a date">
           <DatePicker placeholder="Select a date..." />
         </Field>
       </div>
-
-      {showRightDroppableZone ? <DroppableZone onDrop={onDrop} /> : null}
+      {showRightDroppableZone ? (
+        <DroppableZone
+          onDrop={(field: FormFieldMetadata) => {
+            onDrop(field, DropPositionType.RIGHT);
+          }}
+        />
+      ) : null}
     </div>
   );
 };
