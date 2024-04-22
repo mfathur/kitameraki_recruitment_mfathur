@@ -18,7 +18,7 @@ const SettingPage = () => {
   const navigate = useNavigate();
 
   const {
-    fields,
+    optionalFields,
     isLoading,
     error,
     isSaveSucceed,
@@ -102,15 +102,18 @@ const SettingPage = () => {
           <p>Loading...</p>
         ) : (
           <>
-            {fields.size === 0 && (
+            {optionalFields.size === 0 && (
               <DroppableZone className="min-h-60" onDrop={addFieldOnNewRow} />
             )}
 
             <div className="relative w-full min-h-16 ">
-              <OptionalFields onDrop={addFieldOnExistingRow} fields={fields} />
+              <OptionalFields
+                onDrop={addFieldOnExistingRow}
+                fields={optionalFields}
+              />
             </div>
 
-            {fields.size > 0 ? (
+            {optionalFields.size > 0 ? (
               <DroppableZone onDrop={addFieldOnNewRow} className="mt-4" />
             ) : null}
           </>

@@ -20,5 +20,6 @@ type PaginationMetadata = {
 };
 
 type FormFieldMetadata = {
+  id: string;
   type: string;
 };

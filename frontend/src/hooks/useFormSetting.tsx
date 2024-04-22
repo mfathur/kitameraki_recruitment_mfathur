@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DropPositionType } from "../utils/constants";
 import axiosClient from "../network/apiClient";
+import { nanoid } from "nanoid";
 
 const useFormSetting = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -8,9 +9,9 @@ const useFormSetting = () => {
 
   const [error, setError] = useState<string | unknown>();
 
-  const [fields, setFields] = useState<Map<number, FormFieldMetadata[]>>(
-    new Map()
-  );
+  const [optionalFields, setOptionalFields] = useState<
+    Map<number, FormFieldMetadata[]>
+  >(new Map());
 
   useEffect(() => {
     const getOptionalFormFormat = async () => {
@@ -29,7 +30,7 @@ const useFormSetting = () => {
           );
         }
 
-        setFields(optionalFormFormat);
+        setOptionalFields(optionalFormFormat);
       } catch (error) {
         setError(error);
       } finally {
@@ -44,7 +45,7 @@ const useFormSetting = () => {
     setIsSaveSucceed(false);
     try {
       const requestBody = {
-        ...Object.fromEntries(fields),
+        ...Object.fromEntries(optionalFields),
       };
       const response = await axiosClient.put("/form/optional", requestBody);
       const statusCode = response.status;
@@ -57,7 +58,10 @@ const useFormSetting = () => {
   };
 
   const addFieldOnNewRow = (field: FormFieldMetadata) => {
-    setFields((prev) => {
+    setOptionalFields((prev) => {
+      const uid = nanoid();
+      field.id = uid;
+
       const newMap = new Map(prev);
       newMap.set(prev.size, [field]);
       return newMap;
@@ -69,7 +73,10 @@ const useFormSetting = () => {
     rowIdx: number,
     dropPosition: DropPositionType
   ) => {
-    setFields((prev) => {
+    setOptionalFields((prev) => {
+      const uid = nanoid();
+      field.id = uid;
+
       if (dropPosition === DropPositionType.LEFT) {
         prev.get(rowIdx)?.unshift(field);
       } else if (dropPosition === DropPositionType.RIGHT) {
@@ -80,7 +87,7 @@ const useFormSetting = () => {
   };
 
   return {
-    fields,
+    optionalFields,
     isLoading,
     error,
     isSaveSucceed,
