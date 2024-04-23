@@ -8,11 +8,26 @@ import { DropPositionType, FORM_TYPES } from "../utils/constants";
 type Props = {
   onDrop: (field: FormFieldMetadata, dropPosition: DropPositionType) => void;
   isAbleToAddField: boolean;
+  field: FormFieldMetadata;
+  initialValue?: Date;
+  onFieldBlur?: (value: Date) => void;
 };
 
-const DatePickerComponent = ({ onDrop, isAbleToAddField }: Props) => {
+const DatePickerComponent = ({
+  initialValue = new Date(),
+  field,
+  onDrop,
+  isAbleToAddField,
+  onFieldBlur,
+}: Props) => {
   const [showRightDroppableZone, setShowRightDroppableZone] = useState(false);
   const [showLeftDroppableZone, setShowLeftDroppableZone] = useState(false);
+
+  const [value, setValue] = useState<Date>(initialValue);
+
+  const handleSelectDate = (date: Date | null | undefined) => {
+    if (date) setValue(date);
+  };
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -60,8 +75,16 @@ const DatePickerComponent = ({ onDrop, isAbleToAddField }: Props) => {
         />
       ) : null}
       <div className="w-full">
-        <Field className="w-full" label="Select a date">
-          <DatePicker placeholder="Select a date..." />
+        <Field className="w-full" label={`Date-${String(field.id)}`}>
+          <DatePicker
+            allowTextInput={false}
+            placeholder="Select a date..."
+            onSelectDate={handleSelectDate}
+            onBlur={() => {
+              if (onFieldBlur) onFieldBlur(value);
+            }}
+            value={value}
+          />
         </Field>
       </div>
       {showRightDroppableZone ? (

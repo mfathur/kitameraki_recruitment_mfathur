@@ -7,13 +7,24 @@ import { DropPositionType, FORM_TYPES } from "../utils/constants";
 type Props = {
   onDrop: (field: FormFieldMetadata, dropPosition: DropPositionType) => void;
   isAbleToAddField: boolean;
+  field: FormFieldMetadata;
+  initialValue?: number;
+  onFieldBlur?: (value: number) => void;
 };
 
-const SpinButtonComponent = ({ onDrop, isAbleToAddField }: Props) => {
+const SpinButtonComponent = ({
+  initialValue = 0,
+  field,
+  onDrop,
+  isAbleToAddField,
+  onFieldBlur,
+}: Props) => {
   const id = useId();
 
   const [showRightDroppableZone, setShowRightDroppableZone] = useState(false);
   const [showLeftDroppableZone, setShowLeftDroppableZone] = useState(false);
+
+  const [value, setValue] = useState<number>(initialValue);
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -62,9 +73,20 @@ const SpinButtonComponent = ({ onDrop, isAbleToAddField }: Props) => {
       ) : null}
       <div className="w-full">
         <Label htmlFor={id} className="block ">
-          Default SpinButton
+          {`Spin-${String(field.id)}`}
         </Label>
-        <SpinButton className="w-full" defaultValue={0} min={0} id={id} />
+        <SpinButton
+          className="w-full"
+          min={0}
+          id={id}
+          value={value}
+          onChange={(_, data) => {
+            setValue(Number(data?.value));
+          }}
+          onBlur={() => {
+            if (onFieldBlur) onFieldBlur(value);
+          }}
+        />
       </div>
       {showRightDroppableZone ? (
         <DroppableZone

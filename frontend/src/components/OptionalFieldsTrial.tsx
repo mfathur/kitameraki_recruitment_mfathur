@@ -10,14 +10,22 @@ type Props = {
     index: number,
     dropPosition: DropPositionType
   ) => void;
+  onFieldValueChange: (fieldId: string, value: unknown) => void;
+  task?: Task;
 };
-const OptionalFields = ({ fields, onDrop }: Props) => {
+const OptionalFieldsTrial = ({
+  fields,
+  onDrop,
+  onFieldValueChange,
+  task,
+}: Props) => {
   // render field form based on its type
   const renderFormFields = (
     field: FormFieldMetadata,
     rowIdx: number,
     index: number,
-    isAbleToAddField: boolean
+    isAbleToAddField: boolean,
+    onFieldValueChange: (fieldId: string, value: unknown) => void
   ) => {
     switch (field.type) {
       case FORM_TYPES.DATE:
@@ -32,6 +40,14 @@ const OptionalFields = ({ fields, onDrop }: Props) => {
                 onDrop(field, rowIdx, dropPosition);
               }}
               isAbleToAddField={isAbleToAddField}
+              onFieldBlur={(value: Date) => {
+                onFieldValueChange(field.id, value.toISOString());
+              }}
+              // initialValue={
+              //   task
+              //     ? new Date(task?.optionals?.[field.id] as string)
+              //     : undefined
+              // }
             />
           </div>
         );
@@ -47,6 +63,10 @@ const OptionalFields = ({ fields, onDrop }: Props) => {
                 onDrop(field, rowIdx, dropPosition);
               }}
               isAbleToAddField={isAbleToAddField}
+              onFieldBlur={(value: number) => {
+                onFieldValueChange(field.id, value);
+              }}
+              initialValue={task?.optionals?.[field.id] as number}
             />
           </div>
         );
@@ -62,6 +82,10 @@ const OptionalFields = ({ fields, onDrop }: Props) => {
                 onDrop(field, rowIdx, dropPosition);
               }}
               isAbleToAddField={isAbleToAddField}
+              onFieldBlur={(value: string) => {
+                onFieldValueChange(field.id, value);
+              }}
+              initialValue={task?.optionals?.[field.id] as string}
             />
           </div>
         );
@@ -75,10 +99,10 @@ const OptionalFields = ({ fields, onDrop }: Props) => {
           {values.length === 2
             ? // if in one row already have 2 fields horizontally, make that row unable to add more field
               values.map((field: FormFieldMetadata, index: number) =>
-                renderFormFields(field, key, index, false)
+                renderFormFields(field, key, index, false, onFieldValueChange)
               )
             : values.map((field: FormFieldMetadata, index: number) =>
-                renderFormFields(field, key, index, true)
+                renderFormFields(field, key, index, true, onFieldValueChange)
               )}
         </div>
       ))}
@@ -86,4 +110,4 @@ const OptionalFields = ({ fields, onDrop }: Props) => {
   );
 };
 
-export default OptionalFields;
+export default OptionalFieldsTrial;

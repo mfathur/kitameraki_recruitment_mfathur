@@ -65,12 +65,15 @@ const usePaginatedTasks = (page: number) => {
       const response = await axiosClient.post(`/tasks`, {
         title: task.title,
         description: task.description,
+        optionals: task.optionals,
       });
       const statusCode = response.status;
       const payload = await response?.data.data;
       task.id = payload.id;
 
       if (statusCode === 201) {
+        console.log(task);
+
         setTasks((prevData) => [...prevData, task]);
       }
     } catch (error) {
@@ -83,6 +86,7 @@ const usePaginatedTasks = (page: number) => {
       const response = await axiosClient.put(`/tasks/${task.id}`, {
         title: task.title,
         description: task.description,
+        optionals: task.optionals,
       });
 
       const statusCode = response.status;

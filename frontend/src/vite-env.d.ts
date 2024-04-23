@@ -10,6 +10,9 @@ type Task = {
   id: string;
   title: string;
   description: string;
+  optionals?: {
+    [optionalField: string]: unknown;
+  };
 };
 
 type PaginationMetadata = {

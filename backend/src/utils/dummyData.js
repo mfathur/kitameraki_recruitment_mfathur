@@ -1,14 +1,17 @@
 export const dummyFormOptionalFormat = {
   0: [
     {
+      id: "UxiwL6Yr6zFpnZmM",
       type: "spin",
     },
     {
+      id: "tdwBpPtD7lp5XvCg",
       type: "date",
     },
   ],
   1: [
     {
+      id: "nNkT0wKtIzTlMGIh",
       type: "text",
     },
   ],
@@ -19,6 +22,11 @@ export const dummyData = [
     id: "UxiwL6Yr6zFpnZmM",
     title: "Lorem Ipsum 1",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    optionals: {
+      UxiwL6Yr6zFpnZmM: 20,
+      nNkT0wKtIzTlMGIh: "asdasdhah",
+      tdwBpPtD7lp5XvCg: "2024-04-16T17:00:00.000Z",
+    },
   },
   {
     id: "tdwBpPtD7lp5XvCg",

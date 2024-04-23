@@ -7,13 +7,24 @@ import { DropPositionType, FORM_TYPES } from "../utils/constants";
 type Props = {
   onDrop: (field: FormFieldMetadata, dropPosition: DropPositionType) => void;
   isAbleToAddField: boolean;
+  field: FormFieldMetadata;
+  initialValue?: string;
+  onFieldBlur?: (value: string) => void;
 };
 
-const TextFieldComponent = ({ onDrop, isAbleToAddField }: Props) => {
+const TextFieldComponent = ({
+  initialValue = "",
+  field,
+  onDrop,
+  isAbleToAddField,
+  onFieldBlur,
+}: Props) => {
   const id = useId();
 
   const [showRightDroppableZone, setShowRightDroppableZone] = useState(false);
   const [showLeftDroppableZone, setShowLeftDroppableZone] = useState(false);
+
+  const [value, setValue] = useState(initialValue);
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -62,9 +73,20 @@ const TextFieldComponent = ({ onDrop, isAbleToAddField }: Props) => {
       ) : null}
       <div className="w-full">
         <Label className="block" htmlFor={id}>
-          input
+          {`Text-${String(field.id)}`}
         </Label>
-        <Input className="w-full" type="text" id={id} />
+        <Input
+          className="w-full"
+          type="text"
+          id={id}
+          onBlur={() => {
+            if (onFieldBlur) onFieldBlur(value);
+          }}
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+        />
       </div>
       {showRightDroppableZone ? (
         <DroppableZone
