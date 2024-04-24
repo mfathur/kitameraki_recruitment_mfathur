@@ -13,7 +13,7 @@ const checkRequestError = (req, res, next) => {
     .map((error) => extractedErrors.push({ [error.path]: error.msg }));
 
   res.statusCode = 422;
-  return res.json({ errors: extractedErrors });
+  return res.json({ success: false, errors: extractedErrors });
 };
 
 export default checkRequestError;
