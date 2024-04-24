@@ -1,8 +1,7 @@
 import express from "express";
 import TaskService from "../service.js";
 import task from "../models/task.js";
-import checkTaskBodyRequest from "../middlewares/validationRules.js";
-import checkRequestError from "../../../utils/checkRequestError.js";
+import validateRequestBodySchema from "../../../middlewares/validateRequestBodySchema.js";
 
 const router = express.Router();
 
@@ -23,7 +22,6 @@ const postTaskAction = (_taskService) => async (req, res, next) => {
 
 export const postTask = router.post(
   "/",
-  checkTaskBodyRequest(),
-  checkRequestError,
+  validateRequestBodySchema("tasks/schemas/postTaskSchema.json"),
   postTaskAction(new TaskService(task))
 );
