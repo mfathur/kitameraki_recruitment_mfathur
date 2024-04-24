@@ -2,7 +2,7 @@ import express from "express";
 import TaskService from "../service.js";
 import task from "../models/task.js";
 import checkTaskBodyRequest from "../middlewares/validationRules.js";
-import checkRequestError from "../../../utils/checkRequestError.js";
+import checkRequestError from "../../../middlewares/checkRequestError.js";
 
 const router = express.Router();
 

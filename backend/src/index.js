@@ -4,8 +4,8 @@ import cors from "cors";
 import configObj from "./config/index.js";
 import dotenv from "dotenv";
 import apis from "./apis/index.js";
-import errorHandler from "./utils/errorHandler.js";
-import errorLogger from "./utils/errorLogger.js";
+import errorLogger from "./middlewares/errorLogger.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
 dotenv.config();
 const config = configObj[process.env.NODE_ENV];
