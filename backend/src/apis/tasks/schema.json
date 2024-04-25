@@ -1,0 +1,41 @@
+{
+  "schemas": {
+    "postTaskRequest": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "postTaskRequest",
+      "type": "object",
+      "$ref": "definitions#/definitions/task",
+      "required": ["title", "description"]
+    },
+    "putTaskRequest": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "putTaskRequest",
+      "type": "object",
+      "$ref": "definitions#/definitions/task",
+      "required": ["title", "description"]
+    }
+  },
+
+  "definitions": {
+    "$id": "definitions",
+    "definitions": {
+      "task": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "the title of the task"
+          },
+          "description": {
+            "type": "string",
+            "description": "the description of the task"
+          },
+          "optionals": {
+            "description": "optional field",
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

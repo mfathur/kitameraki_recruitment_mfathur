@@ -1,6 +1,6 @@
 import express from "express";
 import TaskService from "../service.js";
-import task from "../models/task.js";
+import taskDao from "../models/taskDao.js";
 
 const router = express.Router();
 
@@ -18,4 +18,7 @@ const getTaskAction = (_taskService) => async (req, res, next) => {
   }
 };
 
-export const getTask = router.get("/:id", getTaskAction(new TaskService(task)));
+export const getTask = router.get(
+  "/:id",
+  getTaskAction(new TaskService(taskDao))
+);

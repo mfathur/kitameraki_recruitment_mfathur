@@ -1,6 +1,6 @@
 import express from "express";
 import TaskService from "../service.js";
-import task from "../models/task.js";
+import taskDao from "../models/taskDao.js";
 
 const router = express.Router();
 
@@ -24,5 +24,5 @@ const getPaginatedTasksAction = (_taskService) => async (req, res, next) => {
 
 export const getPaginatedTasks = router.get(
   "/",
-  getPaginatedTasksAction(new TaskService(task))
+  getPaginatedTasksAction(new TaskService(taskDao))
 );

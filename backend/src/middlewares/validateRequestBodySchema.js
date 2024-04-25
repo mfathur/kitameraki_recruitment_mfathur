@@ -1,13 +1,12 @@
-import { ajv, loadSchemaFileContent } from "../utils/ajv.js";
+import { ajv } from "../utils/ajv.js";
 
 /**
  * Middleware to validate request body JSON schema.
  *
- * @param {string} filePath JSON schema file path
+ * @param {string} schemaKey The key of the schema
  */
-const validateRequestBodySchema = (filePath) => async (req, res, next) => {
-  const jsonSchema = loadSchemaFileContent(filePath);
-  const validate = ajv.compile(jsonSchema);
+const validateRequestBodySchema = (schemaKey) => async (req, res, next) => {
+  const validate = ajv.getSchema(schemaKey);
 
   // validate the request body
   validate(req.body);
@@ -16,7 +15,12 @@ const validateRequestBodySchema = (filePath) => async (req, res, next) => {
   if (validate.errors) {
     res.statusCode = 422;
 
-    return res.json({ success: false, error: validate.errors[0].message });
+    const errors = [];
+    validate.errors.forEach((error) => {
+      errors.push(error.message);
+    });
+
+    return res.json({ success: false, errors: errors });
   }
 
   next();

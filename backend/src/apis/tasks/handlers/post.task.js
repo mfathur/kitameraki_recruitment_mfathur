@@ -1,7 +1,7 @@
 import express from "express";
 import TaskService from "../service.js";
-import task from "../models/task.js";
 import validateRequestBodySchema from "../../../middlewares/validateRequestBodySchema.js";
+import taskDao from "../models/taskDao.js";
 
 const router = express.Router();
 
@@ -22,6 +22,6 @@ const postTaskAction = (_taskService) => async (req, res, next) => {
 
 export const postTask = router.post(
   "/",
-  validateRequestBodySchema("tasks/schemas/postTaskSchema.json"),
-  postTaskAction(new TaskService(task))
+  validateRequestBodySchema("postTaskRequest"),
+  postTaskAction(new TaskService(taskDao))
 );

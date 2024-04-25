@@ -1,8 +1,7 @@
 import express from "express";
 import TaskService from "../service.js";
-import task from "../models/task.js";
-import checkTaskBodyRequest from "../middlewares/validationRules.js";
-import checkRequestError from "../../../middlewares/checkRequestError.js";
+import taskDao from "../models/taskDao.js";
+import validateRequestBodySchema from "../../../middlewares/validateRequestBodySchema.js";
 
 const router = express.Router();
 
@@ -17,13 +16,12 @@ const putTaskAction = (_taskService) => async (req, res, next) => {
       message: "task successfully updated",
     });
   } catch (error) {
-    next(err);
+    next(error);
   }
 };
 
 export const putTask = router.put(
   "/:id",
-  checkTaskBodyRequest(),
-  checkRequestError,
-  putTaskAction(new TaskService(task))
+  validateRequestBodySchema("putTaskRequest"),
+  putTaskAction(new TaskService(taskDao))
 );

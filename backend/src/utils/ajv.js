@@ -1,21 +1,83 @@
-import Ajv from "ajv";
-import { createRequire } from "module";
+import Ajv from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
+import fs from "fs";
 import path from "path";
 
 /**
- * JSON schema validator instance
+ *  Get all subdirectories that included in `apis` directory
+ *
+ * @returns {string[]} list of domains
  */
-export const ajv = new Ajv();
+const getAllAPIDomains = () => {
+  const apisPath = path.join(process.cwd(), "src/apis");
+  return fs
+    .readdirSync(apisPath, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+};
 
 /**
- * Helper function to load json schema for validation
- * @param {string} filePath
+ * Load content from JSON schema file in a domain
+ *
+ * @param {string} domain
+ * @returns {string}
  */
-export const loadSchemaFileContent = (filePath) => {
-  const fileLocation = path.join(process.cwd(), "src/apis", filePath);
+const loadJsonSchemaFrom = (domain) => {
+  const schemaPath = path.join(
+    process.cwd(),
+    "src/apis",
+    domain,
+    "/schema.json"
+  );
 
-  const require = createRequire(import.meta.url);
-  const schema = require(fileLocation);
+  const fileNotExists = !fs.existsSync(schemaPath);
+  if (fileNotExists) return;
 
-  return schema;
+  return JSON.parse(fs.readFileSync(schemaPath, "utf8"));
 };
+
+/**
+ * Load all JSON schemas in every domain
+ *
+ * @returns {string[]}
+ */
+const loadAllJsonSchemas = () => {
+  const schemas = [];
+
+  const domains = getAllAPIDomains();
+  domains.forEach((domain) => {
+    const schema = loadJsonSchemaFrom(domain);
+    // if exists
+    if (schema) {
+      schemas.push(schema);
+    }
+  });
+
+  return schemas;
+};
+
+/**
+ * Instantiate ajv instance
+ *
+ * @returns {Ajv} ajv
+ */
+const initAjv = () => {
+  const ajv = new Ajv({ allErrors: true });
+  addFormats(ajv);
+
+  const jsonSchemas = loadAllJsonSchemas();
+
+  jsonSchemas.forEach((jsonSchema) => {
+    ajv.addSchema(jsonSchema.definitions);
+    for (const schema in jsonSchema.schemas) {
+      ajv.addSchema(jsonSchema.schemas[schema], schema);
+    }
+  });
+
+  return ajv;
+};
+
+/**
+ * Ajv instance
+ */
+export const ajv = initAjv();
