@@ -1,8 +1,8 @@
-export default {
-  development: {
-    port: 3000,
-    corsHeader: ["Link", "Content-Disposition"],
-    corsOrigin: "http://localhost:5173",
-    corsAllowedMethods: ["GET", "PUT", "DELETE", "POST"],
-  },
-};
+import appConfig from "./appConfig.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const config = appConfig[process.env.NODE_ENV];
+
+export default config;

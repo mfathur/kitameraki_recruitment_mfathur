@@ -1,14 +1,10 @@
 import express from "express";
 import http from "http";
 import cors from "cors";
-import configObj from "./config/index.js";
-import dotenv from "dotenv";
 import apis from "./apis/index.js";
 import errorLogger from "./middlewares/errorLogger.js";
 import errorHandler from "./middlewares/errorHandler.js";
-
-dotenv.config();
-const config = configObj[process.env.NODE_ENV];
+import config from "./config/index.js";
 
 const app = express();
 app.server = http.createServer(app);
