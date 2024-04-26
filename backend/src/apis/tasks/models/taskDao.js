@@ -17,7 +17,6 @@ class TaskDao {
    */
   constructor(cosmosClient, databaseId, containerId) {
     this.container = cosmosClient.database(databaseId).container(containerId);
-    this.partitionKey = "id";
   }
 
   async getPaginated(page, pageSize) {
@@ -106,6 +105,24 @@ class TaskDao {
   async update(id, newData) {
     newData.id = id;
     await this.container.items.upsert(newData);
+  }
+
+  async patch(id, newData) {
+    const operations = [
+      {
+        op: "replace",
+        path: "/title",
+        value: newData.title,
+      },
+      {
+        op: "replace",
+        path: "/description",
+        value: newData.description,
+      },
+      { op: "set", path: "/optionals", value: newData.optionals },
+    ];
+
+    await this.container.item(id, id).patch(operations);
   }
 }
 

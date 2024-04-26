@@ -13,6 +13,13 @@
       "type": "object",
       "$ref": "definitions#/definitions/task",
       "required": ["title", "description"]
+    },
+    "patchTaskRequest": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "patchTaskRequest",
+      "type": "object",
+      "$ref": "definitions#/definitions/task",
+      "required": ["title", "description"]
     }
   },
 

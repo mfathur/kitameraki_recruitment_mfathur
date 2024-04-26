@@ -11,6 +11,10 @@ class TaskService {
     return await this.model.update(id, data);
   }
 
+  async editTaskProperties(id, data) {
+    return await this.model.patch(id, data);
+  }
+
   async getPaginatedTasks(page, pageSize) {
     return await this.model.getPaginated(page, pageSize);
   }
