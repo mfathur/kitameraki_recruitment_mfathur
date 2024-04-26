@@ -1,6 +1,7 @@
 import express from "express";
 import FormService from "../service.js";
 import formDao from "../models/formDao.js";
+import validateRequestBodySchema from "../../../middlewares/validateRequestBodySchema.js";
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ const patchOptionalFormFormatAction =
 
 export const patchOptionalFormFormat = router.patch(
   "/optional",
+  validateRequestBodySchema("patchOptionalFormRequest"),
   patchOptionalFormFormatAction(new FormService(formDao))
 );

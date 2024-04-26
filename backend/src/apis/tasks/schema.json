@@ -4,27 +4,27 @@
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "$id": "postTaskRequest",
       "type": "object",
-      "$ref": "definitions#/definitions/task",
+      "$ref": "task#/definitions/task",
       "required": ["title", "description"]
     },
     "putTaskRequest": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "$id": "putTaskRequest",
       "type": "object",
-      "$ref": "definitions#/definitions/task",
+      "$ref": "task#/definitions/task",
       "required": ["title", "description"]
     },
     "patchTaskRequest": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "$id": "patchTaskRequest",
       "type": "object",
-      "$ref": "definitions#/definitions/task",
+      "$ref": "task#/definitions/task",
       "required": ["title", "description"]
     }
   },
 
   "definitions": {
-    "$id": "definitions",
+    "$id": "task",
     "definitions": {
       "task": {
         "type": "object",

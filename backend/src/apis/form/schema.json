@@ -1,0 +1,46 @@
+{
+  "schemas": {
+    "patchOptionalFormRequest": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "patchOptionalFormRequest",
+      "type": "object",
+      "properties": {
+        "format": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "form#/definitions/optionalForm",
+              "required": ["label", "id", "type"]
+            }
+          }
+        }
+      },
+      "required": ["format"]
+    }
+  },
+
+  "definitions": {
+    "$id": "form",
+    "definitions": {
+      "optionalForm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "the id of the field",
+            "type": "string"
+          },
+          "label": {
+            "type": "string",
+            "description": "the label of the field"
+          },
+          "type": {
+            "enum": ["spin", "text", "date"],
+            "description": "the type of the field"
+          }
+        }
+      }
+    }
+  }
+}
