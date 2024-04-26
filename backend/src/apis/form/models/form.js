@@ -9,7 +9,7 @@ class Form {
     return this.optionalFormFormat;
   }
 
-  async updateOptionalFormFormat(newFormat) {
+  async patchOptionalFormFormat(newFormat) {
     this.optionalFormFormat = newFormat;
   }
 }

@@ -8,7 +8,7 @@ class FormService {
   }
 
   async editOptionalFormFormat(newFormat) {
-    await this.model.updateOptionalFormFormat(newFormat);
+    await this.model.patchOptionalFormFormat(newFormat);
   }
 }
 

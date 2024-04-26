@@ -1,6 +1,6 @@
 import express from "express";
 import FormService from "../service.js";
-import form from "../models/form.js";
+import formDao from "../models/formDao.js";
 
 const router = express.Router();
 
@@ -19,5 +19,5 @@ const getOptionalFormFormatAction = (_formService) => async (_, res, next) => {
 
 export const getOptionalFormFormat = router.get(
   "/optional",
-  getOptionalFormFormatAction(new FormService(form))
+  getOptionalFormFormatAction(new FormService(formDao))
 );

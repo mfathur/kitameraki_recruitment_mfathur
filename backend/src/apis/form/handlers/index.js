@@ -1,9 +1,9 @@
 import express from "express";
 import { getOptionalFormFormat } from "./get.optionalFormFormat.js";
-import { putOptionalFormFormat } from "./put.optionalFormFormat.js";
+import { patchOptionalFormFormat } from "./patch.optionalFormFormat.js";
 
 const router = express.Router();
 
-router.use(getOptionalFormFormat, putOptionalFormFormat);
+router.use(getOptionalFormFormat, patchOptionalFormFormat);
 
 export default router;

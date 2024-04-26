@@ -1,5 +1,5 @@
-export const dummyFormOptionalFormat = {
-  0: [
+export const dummyFormOptionalFormat = [
+  [
     {
       id: "UxiwL6Yr6zFpnZmM",
       type: "spin",
@@ -9,13 +9,13 @@ export const dummyFormOptionalFormat = {
       type: "date",
     },
   ],
-  1: [
+  [
     {
       id: "nNkT0wKtIzTlMGIh",
       type: "text",
     },
   ],
-};
+];
 
 export const dummyData = [
   {

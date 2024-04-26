@@ -1,13 +1,13 @@
 import express from "express";
 import FormService from "../service.js";
-import form from "../models/form.js";
+import formDao from "../models/formDao.js";
 
 const router = express.Router();
 
-const putOptionalFormFormatAction =
+const patchOptionalFormFormatAction =
   (_formService) => async (req, res, next) => {
     try {
-      const newOptionalFormFormat = req.body;
+      const newOptionalFormFormat = req.body["format"];
 
       await _formService.editOptionalFormFormat(newOptionalFormFormat);
 
@@ -20,7 +20,7 @@ const putOptionalFormFormatAction =
     }
   };
 
-export const putOptionalFormFormat = router.put(
+export const patchOptionalFormFormat = router.patch(
   "/optional",
-  putOptionalFormFormatAction(new FormService(form))
+  patchOptionalFormFormatAction(new FormService(formDao))
 );
