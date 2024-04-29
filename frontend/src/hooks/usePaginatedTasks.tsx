@@ -24,7 +24,7 @@ const usePaginatedTasks = (page: number) => {
 
       try {
         const response = await axiosClient.get(
-          `/tasks?page=${page}&per_page=5`
+          `/tasks?page=${page}&per_page=10`
         );
 
         const payload = await response.data;
