@@ -1,100 +1,69 @@
-import { Label, SpinButton, useId } from "@fluentui/react-components";
-import { useRef, useState } from "react";
-import DroppableZone from "./DroppableZone";
-import { useDrop } from "react-dnd";
-import { DropPositionType, FORM_TYPES } from "../utils/constants";
+import { SpinButton, useId } from "@fluentui/react-components";
+import { useState } from "react";
+import { useDrag } from "react-dnd";
+import { FORM_TYPES } from "../utils/constants";
+import InlineEditableLabel from "./InlineEditableLabel";
 
 type Props = {
-  onDrop: (field: FormFieldMetadata, dropPosition: DropPositionType) => void;
-  isAbleToAddField: boolean;
   field: FormFieldMetadata;
   initialValue?: number;
-  onFieldBlur?: (value: number) => void;
+  onValueChange?: (value: number) => void;
+  isDraggable: boolean;
+  onPropertyChange?: (field: FormFieldMetadata) => void;
 };
 
 const SpinButtonComponent = ({
   initialValue = 0,
   field,
-  onDrop,
-  isAbleToAddField,
-  onFieldBlur,
+  onValueChange,
+  isDraggable,
+  onPropertyChange,
 }: Props) => {
   const id = useId();
-
-  const [showRightDroppableZone, setShowRightDroppableZone] = useState(false);
-  const [showLeftDroppableZone, setShowLeftDroppableZone] = useState(false);
+  const isLabelCanBeChanged = isDraggable;
 
   const [value, setValue] = useState<number>(initialValue);
 
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [, drop] = useDrop({
-    accept: [FORM_TYPES.DATE, FORM_TYPES.SPIN, FORM_TYPES.TEXT],
-    hover(_, monitor) {
-      if (!isAbleToAddField) {
-        return;
-      }
-
-      if (!ref.current) {
-        return;
-      }
-
-      const hoveredArea = ref.current.getBoundingClientRect();
-      const hoverMiddleX = (hoveredArea.right - hoveredArea.left) / 2;
-      const mousePosition = monitor.getClientOffset();
-      const hoverClientX = mousePosition!.x - hoveredArea.left;
-
-      if (hoverMiddleX < hoverClientX) {
-        setShowLeftDroppableZone(false);
-        setShowRightDroppableZone(true);
-      } else {
-        setShowLeftDroppableZone(true);
-        setShowRightDroppableZone(false);
-      }
-    },
-    collect: (monitor) => {
-      if (!monitor.isOver()) {
-        setShowLeftDroppableZone(false);
-        setShowRightDroppableZone(false);
-      }
-    },
-  });
-
-  drop(ref);
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: FORM_TYPES.SPIN,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { ...field, type: FORM_TYPES.SPIN },
+  }));
 
   return (
-    <div ref={ref} className="flex gap-x-4 items-end">
-      {showLeftDroppableZone ? (
-        <DroppableZone
-          onDrop={(field: FormFieldMetadata) => {
-            onDrop(field, DropPositionType.LEFT);
+    <div
+      ref={isDraggable ? drag : null}
+      className={`flex gap-x-4${
+        isDragging ? "opacity-20 cursor-grabbing" : "opacity-100"
+      } ${isDraggable ? "hover:cursor-grab" : ""} p-2`}
+    >
+      <div className="w-full">
+        <InlineEditableLabel
+          initialLabel={field.label}
+          changeAble={isLabelCanBeChanged}
+          onBlur={(newLabel) => {
+            if (onPropertyChange)
+              onPropertyChange({ ...field, label: newLabel });
           }}
         />
-      ) : null}
-      <div className="w-full">
-        <Label htmlFor={id} className="block ">
-          {`Spin-${String(field.id)}`}
-        </Label>
         <SpinButton
           className="w-full"
           min={0}
           id={id}
           value={value}
           onChange={(_, data) => {
-            setValue(Number(data?.value));
-          }}
-          onBlur={() => {
-            if (onFieldBlur) onFieldBlur(value);
+            if (data?.displayValue) {
+              setValue(Number(data?.displayValue));
+              if (onValueChange) onValueChange(Number(data?.displayValue));
+            } else {
+              setValue(Number(data?.value));
+              if (onValueChange) onValueChange(Number(data?.value));
+            }
           }}
         />
       </div>
-      {showRightDroppableZone ? (
-        <DroppableZone
-          onDrop={(field: FormFieldMetadata) => {
-            onDrop(field, DropPositionType.RIGHT);
-          }}
-        />
-      ) : null}
     </div>
   );
 };

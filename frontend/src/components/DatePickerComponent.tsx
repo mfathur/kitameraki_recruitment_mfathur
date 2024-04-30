@@ -1,99 +1,65 @@
 import { DatePicker } from "@fluentui/react";
-import { Field } from "@fluentui/react-components";
-import DroppableZone from "./DroppableZone";
-import { useRef, useState } from "react";
-import { useDrop } from "react-dnd";
-import { DropPositionType, FORM_TYPES } from "../utils/constants";
+import { useState } from "react";
+import { useDrag } from "react-dnd";
+import { FORM_TYPES } from "../utils/constants";
+import InlineEditableLabel from "./InlineEditableLabel";
 
 type Props = {
-  onDrop: (field: FormFieldMetadata, dropPosition: DropPositionType) => void;
-  isAbleToAddField: boolean;
-  field: FormFieldMetadata;
   initialValue?: Date;
-  onFieldBlur?: (value: Date) => void;
+  field: FormFieldMetadata;
+  isDraggable: boolean;
+  onValueChange?: (value: Date) => void;
+  onPropertyChange?: (field: FormFieldMetadata) => void;
 };
 
 const DatePickerComponent = ({
-  initialValue = new Date(),
+  initialValue,
   field,
-  onDrop,
-  isAbleToAddField,
-  onFieldBlur,
+  isDraggable,
+  onValueChange,
+  onPropertyChange,
 }: Props) => {
-  const [showRightDroppableZone, setShowRightDroppableZone] = useState(false);
-  const [showLeftDroppableZone, setShowLeftDroppableZone] = useState(false);
-
-  const [value, setValue] = useState<Date>(initialValue);
+  const [value, setValue] = useState<Date | undefined>(initialValue);
+  const isLabelCanBeChanged = isDraggable;
 
   const handleSelectDate = (date: Date | null | undefined) => {
-    if (date) setValue(date);
+    if (date) {
+      setValue(date);
+      if (onValueChange) onValueChange(date);
+    }
   };
 
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [, drop] = useDrop({
-    accept: [FORM_TYPES.DATE, FORM_TYPES.SPIN, FORM_TYPES.TEXT],
-    hover(_, monitor) {
-      if (!isAbleToAddField) {
-        return;
-      }
-
-      if (!ref.current) {
-        return;
-      }
-
-      const hoveredArea = ref.current.getBoundingClientRect();
-      const hoverMiddleX = (hoveredArea.right - hoveredArea.left) / 2;
-      const mousePosition = monitor.getClientOffset();
-      const hoverClientX = mousePosition!.x - hoveredArea.left;
-
-      if (hoverMiddleX < hoverClientX) {
-        setShowLeftDroppableZone(false);
-        setShowRightDroppableZone(true);
-      } else {
-        setShowLeftDroppableZone(true);
-        setShowRightDroppableZone(false);
-      }
-    },
-    collect: (monitor) => {
-      if (!monitor.isOver()) {
-        setShowLeftDroppableZone(false);
-        setShowRightDroppableZone(false);
-      }
-    },
-  });
-
-  drop(ref);
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: FORM_TYPES.DATE,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { ...field, type: FORM_TYPES.DATE },
+  }));
 
   return (
-    <div ref={ref} className="flex gap-x-4 items-end">
-      {showLeftDroppableZone ? (
-        <DroppableZone
-          onDrop={(field: FormFieldMetadata) => {
-            onDrop(field, DropPositionType.LEFT);
-          }}
-        />
-      ) : null}
+    <div
+      ref={isDraggable ? drag : null}
+      className={`flex gap-x-4 items-end p-2 ${
+        isDragging ? "opacity-20" : "opacity-100"
+      } ${isDraggable ? "hover:cursor-grab" : ""}`}
+    >
       <div className="w-full">
-        <Field className="w-full" label={`Date-${String(field.id)}`}>
-          <DatePicker
-            allowTextInput={false}
-            placeholder="Select a date..."
-            onSelectDate={handleSelectDate}
-            onBlur={() => {
-              if (onFieldBlur) onFieldBlur(value);
-            }}
-            value={value}
-          />
-        </Field>
-      </div>
-      {showRightDroppableZone ? (
-        <DroppableZone
-          onDrop={(field: FormFieldMetadata) => {
-            onDrop(field, DropPositionType.RIGHT);
+        <InlineEditableLabel
+          initialLabel={field.label}
+          changeAble={isLabelCanBeChanged}
+          onBlur={(newLabel) => {
+            if (onPropertyChange)
+              onPropertyChange({ ...field, label: newLabel });
           }}
         />
-      ) : null}
+        <DatePicker
+          allowTextInput={false}
+          placeholder="Select a date..."
+          onSelectDate={handleSelectDate}
+          value={value}
+        />
+      </div>
     </div>
   );
 };

@@ -9,8 +9,8 @@ import {
   Textarea,
 } from "@fluentui/react-components";
 import useFormSetting from "../hooks/useFormSetting";
-import OptionalFieldsTrial from "./OptionalFieldsTrial";
 import { useState } from "react";
+import OptionalFields from "./OptionalFields";
 
 type Props = {
   onBtnCloseClicked: () => void;
@@ -38,16 +38,11 @@ const CreateTaskModal = ({ onBtnCloseClicked, onBtnCreateClicked }: Props) => {
     },
   });
 
-  const { optionalFields } = useFormSetting();
+  const { isLoading, optionalFields } = useFormSetting();
   const [optionalFieldValues, setOptionalFieldValues] = useState({});
 
   const handleOptionalValueChange = (fieldId: string, value: unknown) => {
-    setOptionalFieldValues((prev) => {
-      const val = { ...prev, [fieldId]: value };
-      console.log(val);
-
-      return val;
-    });
+    setOptionalFieldValues((prev) => ({ ...prev, [fieldId]: value }));
   };
 
   return (
@@ -91,14 +86,17 @@ const CreateTaskModal = ({ onBtnCloseClicked, onBtnCreateClicked }: Props) => {
                   placeholder="write the description here"
                 />
               </Field>
-              <OptionalFieldsTrial
-                onFieldValueChange={handleOptionalValueChange}
-                fields={optionalFields}
-                onDrop={(_field, _index, _dropPosition) => {}}
-              />
+              {isLoading ? (
+                <p>Loading optional fields...</p>
+              ) : (
+                <OptionalFields
+                  onFieldValueChange={handleOptionalValueChange}
+                  fields={optionalFields}
+                />
+              )}
             </div>
 
-            <Button type="submit" appearance="primary">
+            <Button type="submit" appearance="primary" disabled={isLoading}>
               Add new task
             </Button>
           </form>

@@ -72,8 +72,6 @@ const usePaginatedTasks = (page: number) => {
       task.id = payload.id;
 
       if (statusCode === 201) {
-        console.log(task);
-
         setTasks((prevData) => [...prevData, task]);
       }
     } catch (error) {

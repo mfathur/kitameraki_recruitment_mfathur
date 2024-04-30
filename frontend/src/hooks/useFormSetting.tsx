@@ -9,9 +9,9 @@ const useFormSetting = () => {
 
   const [error, setError] = useState<string | unknown>();
 
-  const [optionalFields, setOptionalFields] = useState<
-    Map<number, FormFieldMetadata[]>
-  >(new Map());
+  const [optionalFields, setOptionalFields] = useState<FormFieldMetadata[][]>(
+    []
+  );
 
   useEffect(() => {
     const getOptionalFormFormat = async () => {
@@ -19,17 +19,9 @@ const useFormSetting = () => {
       try {
         const response = await axiosClient.get("/form/optional");
         const payload = await response.data;
-        const dataMap = payload.data;
-
-        // cast response to Map<number, FormFieldMetadata[]>
-        const optionalFormFormat = new Map<number, FormFieldMetadata[]>();
-        for (const key in dataMap) {
-          optionalFormFormat.set(
-            Number(key),
-            dataMap[key] as FormFieldMetadata[]
-          );
-        }
-
+        const optionalFormFormat = payload.data[
+          "format"
+        ] as FormFieldMetadata[][];
         setOptionalFields(optionalFormFormat);
       } catch (error) {
         setError(error);
@@ -45,9 +37,10 @@ const useFormSetting = () => {
     setIsSaveSucceed(false);
     try {
       const requestBody = {
-        ...Object.fromEntries(optionalFields),
+        format: optionalFields,
       };
-      const response = await axiosClient.put("/form/optional", requestBody);
+
+      const response = await axiosClient.patch("/form/optional", requestBody);
       const statusCode = response.status;
       if (statusCode === 200) {
         setIsSaveSucceed(true);
@@ -57,14 +50,38 @@ const useFormSetting = () => {
     }
   };
 
+  const removeFieldFromPreviousPosition = (
+    fields: FormFieldMetadata[][],
+    field: FormFieldMetadata
+  ) => {
+    for (let i = 0; i < fields.length; i++) {
+      const idx = fields[i].findIndex(
+        (existingField) => existingField.id === field.id
+      );
+      if (idx !== -1) {
+        fields[i].splice(idx, 1);
+        break;
+      }
+    }
+
+    return fields;
+  };
+
   const addFieldOnNewRow = (field: FormFieldMetadata) => {
     setOptionalFields((prev) => {
-      const uid = nanoid();
-      field.id = uid;
+      let newState = [...prev];
+      if (field.id) {
+        //  if existing field will change its position, remove from the prev position first
+        newState = removeFieldFromPreviousPosition(newState, field);
+      } else {
+        // if it is the new field
+        const uid = nanoid();
+        field.id = uid;
+        field.label = `${field.type}-${uid}`;
+      }
 
-      const newMap = new Map(prev);
-      newMap.set(prev.size, [field]);
-      return newMap;
+      newState.push([{ ...field }]);
+      return newState.filter((fieldsInRow) => fieldsInRow.length !== 0);
     });
   };
 
@@ -74,15 +91,51 @@ const useFormSetting = () => {
     dropPosition: DropPositionType
   ) => {
     setOptionalFields((prev) => {
-      const uid = nanoid();
-      field.id = uid;
+      let newState = [...prev];
+
+      if (field.id) {
+        //  if existing field will change its position, remove from the prev position first
+        newState = removeFieldFromPreviousPosition(newState, field);
+      } else {
+        // if it is the new field
+        const uid = nanoid();
+        field.id = uid;
+        field.label = `${field.type}-${uid}`;
+      }
 
       if (dropPosition === DropPositionType.LEFT) {
-        prev.get(rowIdx)?.unshift(field);
+        newState[rowIdx].unshift(field);
       } else if (dropPosition === DropPositionType.RIGHT) {
-        prev.get(rowIdx)?.push(field);
+        newState[rowIdx].push(field);
       }
-      return new Map(prev);
+
+      return newState.filter((fieldsInRow) => fieldsInRow.length !== 0);
+    });
+  };
+
+  const handleFieldPropertiesChange = (
+    field: FormFieldMetadata,
+    rowIdx: number
+  ) => {
+    setOptionalFields((prev) => {
+      const newState = [...prev];
+      const index = newState[rowIdx].findIndex(
+        (existingField) => existingField.id === field.id
+      );
+
+      newState[rowIdx][index] = field;
+
+      return newState;
+    });
+  };
+
+  const onSwapRow = (fromIdx: number, toIdx: number) => {
+    setOptionalFields((prev) => {
+      const newState = [...prev];
+      const temp = newState[fromIdx];
+      newState[fromIdx] = newState[toIdx];
+      newState[toIdx] = temp;
+      return newState;
     });
   };
 
@@ -94,6 +147,8 @@ const useFormSetting = () => {
     addFieldOnNewRow,
     addFieldOnExistingRow,
     saveFormOptionalFormat,
+    handleFieldPropertiesChange,
+    onSwapRow,
   };
 };
 

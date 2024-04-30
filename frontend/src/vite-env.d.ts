@@ -25,4 +25,9 @@ type PaginationMetadata = {
 type FormFieldMetadata = {
   id: string;
   type: string;
+  label: string;
+};
+
+type FieldRow = {
+  rowIdx: number;
 };

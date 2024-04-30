@@ -1,15 +1,15 @@
 import { useDrop } from "react-dnd";
-import { FORM_TYPES } from "../utils/constants";
 
 type Props = {
   className?: string;
   onDrop: (field: FormFieldMetadata) => void;
+  accept: string[];
 };
 
-const DroppableZone = ({ className, onDrop }: Props) => {
+const DroppableZone = ({ className, onDrop, accept }: Props) => {
   const [, drop] = useDrop(
     () => ({
-      accept: [FORM_TYPES.DATE, FORM_TYPES.SPIN, FORM_TYPES.TEXT],
+      accept: accept,
       drop: onDrop,
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),

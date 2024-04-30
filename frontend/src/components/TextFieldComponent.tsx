@@ -1,80 +1,55 @@
-import { Input, Label, useId } from "@fluentui/react-components";
-import DroppableZone from "./DroppableZone";
-import { useRef, useState } from "react";
-import { useDrop } from "react-dnd";
-import { DropPositionType, FORM_TYPES } from "../utils/constants";
+import { Input, useId } from "@fluentui/react-components";
+import { useState } from "react";
+import { useDrag } from "react-dnd";
+import { FORM_TYPES } from "../utils/constants";
+import InlineEditableLabel from "./InlineEditableLabel";
 
 type Props = {
-  onDrop: (field: FormFieldMetadata, dropPosition: DropPositionType) => void;
-  isAbleToAddField: boolean;
   field: FormFieldMetadata;
   initialValue?: string;
   onFieldBlur?: (value: string) => void;
+  isDraggable: boolean;
+  onPropertyChange?: (field: FormFieldMetadata) => void;
 };
 
 const TextFieldComponent = ({
   initialValue = "",
   field,
-  onDrop,
-  isAbleToAddField,
   onFieldBlur,
+  isDraggable,
+  onPropertyChange,
 }: Props) => {
   const id = useId();
-
-  const [showRightDroppableZone, setShowRightDroppableZone] = useState(false);
-  const [showLeftDroppableZone, setShowLeftDroppableZone] = useState(false);
+  const isLabelCanBeChanged = isDraggable;
 
   const [value, setValue] = useState(initialValue);
 
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [, drop] = useDrop({
-    accept: [FORM_TYPES.DATE, FORM_TYPES.SPIN, FORM_TYPES.TEXT],
-    hover(_, monitor) {
-      if (!isAbleToAddField) {
-        return;
-      }
-
-      if (!ref.current) {
-        return;
-      }
-
-      const hoveredArea = ref.current.getBoundingClientRect();
-      const hoverMiddleX = (hoveredArea.right - hoveredArea.left) / 2;
-      const mousePosition = monitor.getClientOffset();
-      const hoverClientX = mousePosition!.x - hoveredArea.left;
-
-      if (hoverMiddleX < hoverClientX) {
-        setShowLeftDroppableZone(false);
-        setShowRightDroppableZone(true);
-      } else {
-        setShowLeftDroppableZone(true);
-        setShowRightDroppableZone(false);
-      }
-    },
-    collect: (monitor) => {
-      if (!monitor.isOver()) {
-        setShowLeftDroppableZone(false);
-        setShowRightDroppableZone(false);
-      }
-    },
-  });
-
-  drop(ref);
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: FORM_TYPES.TEXT,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { ...field, type: FORM_TYPES.TEXT },
+  }));
 
   return (
-    <div ref={ref} className="flex gap-x-4 items-end">
-      {showLeftDroppableZone ? (
-        <DroppableZone
-          onDrop={(field: FormFieldMetadata) => {
-            onDrop(field, DropPositionType.LEFT);
+    <div
+      ref={isDraggable ? drag : null}
+      className={`flex gap-x-4 items-end p-2`}
+    >
+      <div
+        className={`w-full ${
+          isDragging ? "opacity-20 cursor-grabbing" : "opacity-100 "
+        } ${isDraggable ? "hover:cursor-grab" : ""}`}
+      >
+        <InlineEditableLabel
+          initialLabel={field.label}
+          changeAble={isLabelCanBeChanged}
+          onBlur={(newLabel) => {
+            if (onPropertyChange)
+              onPropertyChange({ ...field, label: newLabel });
           }}
         />
-      ) : null}
-      <div className="w-full">
-        <Label className="block" htmlFor={id}>
-          {`Text-${String(field.id)}`}
-        </Label>
         <Input
           className="w-full"
           type="text"
@@ -88,13 +63,6 @@ const TextFieldComponent = ({
           }}
         />
       </div>
-      {showRightDroppableZone ? (
-        <DroppableZone
-          onDrop={(field: FormFieldMetadata) => {
-            onDrop(field, DropPositionType.RIGHT);
-          }}
-        />
-      ) : null}
     </div>
   );
 };

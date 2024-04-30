@@ -8,9 +8,9 @@ import {
   Label,
   Textarea,
 } from "@fluentui/react-components";
-import OptionalFieldsTrial from "./OptionalFieldsTrial";
 import useFormSetting from "../hooks/useFormSetting";
 import { useState } from "react";
+import OptionalFields from "./OptionalFields";
 
 type Props = {
   task: Task;
@@ -40,7 +40,7 @@ const UpdateTaskModal = ({
     },
   });
 
-  const { optionalFields } = useFormSetting();
+  const { isLoading, optionalFields } = useFormSetting();
 
   const [optionalFieldValues, setOptionalFieldValues] = useState(
     task.optionals
@@ -52,7 +52,7 @@ const UpdateTaskModal = ({
 
   return (
     <div className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0  max-h-full h-full bg-black bg-opacity-60">
-      <div className="relative p-4 w-full max-w-md max-h-full md:left-1/3 -bottom-1/4">
+      <div className="relative p-4 w-full max-w-md max-h-full md:left-1/3">
         <div className="relative bg-white rounded-lg shadow ">
           <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t ">
             <h3 className="text-lg font-semibold">Edit Task</h3>
@@ -92,12 +92,15 @@ const UpdateTaskModal = ({
                   placeholder="write the description here"
                 />
               </Field>
-              <OptionalFieldsTrial
-                onFieldValueChange={handleOptionalValueChange}
-                fields={optionalFields}
-                onDrop={(_field, _index, _dropPosition) => {}}
-                task={task}
-              />
+              {isLoading ? (
+                <p>Loading optional fields...</p>
+              ) : (
+                <OptionalFields
+                  onFieldValueChange={handleOptionalValueChange}
+                  fields={optionalFields}
+                  task={task}
+                />
+              )}
             </div>
             <Button type="submit" appearance="primary">
               Save task

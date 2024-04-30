@@ -11,8 +11,8 @@ import ItemFormComponent from "../components/ItemFormComponent";
 import DroppableZone from "../components/DroppableZone";
 
 import { FORM_TYPES } from "../utils/constants";
-import OptionalFields from "../components/OptionalFields";
 import useFormSetting from "../hooks/useFormSetting";
+import OptionalFields from "../components/OptionalFields";
 
 const SettingPage = () => {
   const navigate = useNavigate();
@@ -25,6 +25,8 @@ const SettingPage = () => {
     addFieldOnNewRow,
     addFieldOnExistingRow,
     saveFormOptionalFormat,
+    handleFieldPropertiesChange,
+    onSwapRow,
   } = useFormSetting();
 
   useEffect(() => {
@@ -102,19 +104,30 @@ const SettingPage = () => {
           <p>Loading...</p>
         ) : (
           <>
-            {optionalFields.size === 0 && (
-              <DroppableZone className="min-h-60" onDrop={addFieldOnNewRow} />
+            {optionalFields.length === 0 && (
+              <DroppableZone
+                accept={[FORM_TYPES.DATE, FORM_TYPES.TEXT, FORM_TYPES.SPIN]}
+                className="min-h-60"
+                onDrop={addFieldOnNewRow}
+              />
             )}
 
             <div className="relative w-full min-h-16 ">
               <OptionalFields
                 onDrop={addFieldOnExistingRow}
+                onFieldPropertiesChange={handleFieldPropertiesChange}
                 fields={optionalFields}
+                isInFormSetting={true}
+                onSwapRow={onSwapRow}
               />
             </div>
 
-            {optionalFields.size > 0 ? (
-              <DroppableZone onDrop={addFieldOnNewRow} className="mt-4" />
+            {optionalFields.length > 0 ? (
+              <DroppableZone
+                accept={[FORM_TYPES.DATE, FORM_TYPES.TEXT, FORM_TYPES.SPIN]}
+                onDrop={addFieldOnNewRow}
+                className="mt-4"
+              />
             ) : null}
           </>
         )}

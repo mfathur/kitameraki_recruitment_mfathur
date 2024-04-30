@@ -1,86 +1,43 @@
-import { DropPositionType, FORM_TYPES } from "../utils/constants";
-import DatePickerComponent from "./DatePickerComponent";
-import SpinButtonComponent from "./SpinButtonComponent";
-import TextFieldComponent from "./TextFieldComponent";
+import { DropPositionType } from "../utils/constants";
+import FieldRow from "./FieldRow";
 
 type Props = {
-  fields: Map<number, FormFieldMetadata[]>;
-  onDrop: (
+  fields: FormFieldMetadata[][];
+  isInFormSetting?: boolean;
+  task?: Task;
+  onDrop?: (
     field: FormFieldMetadata,
     index: number,
     dropPosition: DropPositionType
   ) => void;
+  onFieldValueChange?: (fieldId: string, value: unknown) => void;
+  onFieldPropertiesChange?: (field: FormFieldMetadata, rowIdx: number) => void;
+  onSwapRow?: (fromIdx: number, toIdx: number) => void;
 };
-const OptionalFields = ({ fields, onDrop }: Props) => {
-  // render field form based on its type
-  const renderFormFields = (
-    field: FormFieldMetadata,
-    rowIdx: number,
-    index: number,
-    isAbleToAddField: boolean
-  ) => {
-    switch (field.type) {
-      case FORM_TYPES.DATE:
-        return (
-          <div key={`${index}-${field}`} className="w-full">
-            <DatePickerComponent
-              field={field}
-              onDrop={(
-                field: FormFieldMetadata,
-                dropPosition: DropPositionType
-              ) => {
-                onDrop(field, rowIdx, dropPosition);
-              }}
-              isAbleToAddField={isAbleToAddField}
-            />
-          </div>
-        );
-      case FORM_TYPES.SPIN:
-        return (
-          <div key={`${index}-${field}`} className="w-full">
-            <SpinButtonComponent
-              field={field}
-              onDrop={(
-                field: FormFieldMetadata,
-                dropPosition: DropPositionType
-              ) => {
-                onDrop(field, rowIdx, dropPosition);
-              }}
-              isAbleToAddField={isAbleToAddField}
-            />
-          </div>
-        );
-      case FORM_TYPES.TEXT:
-        return (
-          <div key={`${index}-${field}`} className="w-full">
-            <TextFieldComponent
-              field={field}
-              onDrop={(
-                field: FormFieldMetadata,
-                dropPosition: DropPositionType
-              ) => {
-                onDrop(field, rowIdx, dropPosition);
-              }}
-              isAbleToAddField={isAbleToAddField}
-            />
-          </div>
-        );
-    }
-  };
 
+const OptionalFields = ({
+  fields,
+  task,
+  isInFormSetting = false,
+  onDrop,
+  onFieldValueChange,
+  onFieldPropertiesChange,
+  onSwapRow,
+}: Props) => {
   return (
-    <div className="flex flex-col gap-y-4">
-      {Array.from(fields.entries()).map(([key, values]) => (
-        <div key={key} className="flex gap-x-4">
-          {values.length === 2
-            ? // if in one row already have 2 fields horizontally, make that row unable to add more field
-              values.map((field: FormFieldMetadata, index: number) =>
-                renderFormFields(field, key, index, false)
-              )
-            : values.map((field: FormFieldMetadata, index: number) =>
-                renderFormFields(field, key, index, true)
-              )}
-        </div>
+    <div className="flex flex-col gap-y-0">
+      {fields.map((fieldsPerRow, index) => (
+        <FieldRow
+          key={`${index}-${fieldsPerRow[0].id}`}
+          isInFormSetting={isInFormSetting}
+          rowIdx={index}
+          fields={fieldsPerRow}
+          task={task}
+          onDrop={onDrop}
+          onFieldValueChange={onFieldValueChange}
+          onFieldPropertiesChange={onFieldPropertiesChange}
+          onSwapRow={onSwapRow}
+        />
       ))}
     </div>
   );
