@@ -26,7 +26,8 @@ const SettingPage = () => {
     addFieldOnExistingRow,
     saveFormOptionalFormat,
     handleFieldPropertiesChange,
-    onSwapRow,
+    handleSwapRow,
+    handleInsertAfterRow,
   } = useFormSetting();
 
   useEffect(() => {
@@ -118,17 +119,10 @@ const SettingPage = () => {
                 onFieldPropertiesChange={handleFieldPropertiesChange}
                 fields={optionalFields}
                 isInFormSetting={true}
-                onSwapRow={onSwapRow}
+                onSwapRow={handleSwapRow}
+                onInsertAfterRow={handleInsertAfterRow}
               />
             </div>
-
-            {optionalFields.length > 0 ? (
-              <DroppableZone
-                accept={[FORM_TYPES.DATE, FORM_TYPES.TEXT, FORM_TYPES.SPIN]}
-                onDrop={addFieldOnNewRow}
-                className="mt-4"
-              />
-            ) : null}
           </>
         )}
       </div>

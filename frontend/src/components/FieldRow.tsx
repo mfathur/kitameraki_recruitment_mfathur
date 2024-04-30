@@ -19,6 +19,7 @@ type Props = {
   ) => void;
   onFieldPropertiesChange?: (field: FormFieldMetadata, rowIdx: number) => void;
   onSwapRow?: (fromIdx: number, toIdx: number) => void;
+  onInsertAfterRow?: (field: FormFieldMetadata, rowIdx: number) => void;
 };
 
 const FieldRow = ({
@@ -30,9 +31,11 @@ const FieldRow = ({
   onDrop,
   onFieldPropertiesChange,
   onSwapRow,
+  onInsertAfterRow,
 }: Props) => {
   const [showRightDroppableZone, setShowRightDroppableZone] = useState(false);
   const [showLeftDroppableZone, setShowLeftDroppableZone] = useState(false);
+  const [showBottomDroppableZone, setShowBottomDroppableZone] = useState(false);
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -71,28 +74,43 @@ const FieldRow = ({
       }
     },
     hover: (item: FormFieldMetadata | FieldRow, monitor) => {
-      // if the row already contains 2 field horizontally or not in optional setting page
-      // or the dragged item is a field row, disable the droppable zone
-      const isAFieldRow = Object.prototype.hasOwnProperty.call(item, "rowIdx");
-      if (fields.length === 2 || !isInFormSetting || isAFieldRow) {
-        setShowLeftDroppableZone(false);
-        setShowRightDroppableZone(false);
+      if (!isInFormSetting) {
         return;
       }
+
       if (!ref.current) {
         return;
       }
 
+      setShowBottomDroppableZone(true);
+
+      // if the row already contains 2 field horizontally or not in optional setting page
+      // or the dragged item is a field row, disable the droppable zone
+      const isAFieldRow = Object.prototype.hasOwnProperty.call(item, "rowIdx");
+      if (fields.length === 2 || isAFieldRow) {
+        setShowLeftDroppableZone(false);
+        setShowRightDroppableZone(false);
+        return;
+      }
+
       const hoveredArea = ref.current.getBoundingClientRect();
-      const hoverMiddleX = (hoveredArea.right - hoveredArea.left) / 2;
       const mousePosition = monitor.getClientOffset();
+      const hoverMiddleX = (hoveredArea.right - hoveredArea.left) / 2;
       const hoverClientX = mousePosition!.x - hoveredArea.left;
 
-      if (hoverMiddleX < hoverClientX) {
-        setShowLeftDroppableZone(false);
-        setShowRightDroppableZone(true);
+      const hoverY = (3 * (hoveredArea.bottom - hoveredArea.top)) / 4;
+      const hoverClientY = mousePosition!.y - hoveredArea.top;
+
+      if (hoverY > hoverClientY) {
+        if (hoverMiddleX < hoverClientX) {
+          setShowLeftDroppableZone(false);
+          setShowRightDroppableZone(true);
+        } else {
+          setShowLeftDroppableZone(true);
+          setShowRightDroppableZone(false);
+        }
       } else {
-        setShowLeftDroppableZone(true);
+        setShowLeftDroppableZone(false);
         setShowRightDroppableZone(false);
       }
     },
@@ -100,6 +118,7 @@ const FieldRow = ({
       if (!monitor.isOver()) {
         setShowLeftDroppableZone(false);
         setShowRightDroppableZone(false);
+        setShowBottomDroppableZone(false);
       }
     },
     canDrop: (item, _) => {
@@ -192,33 +211,43 @@ const FieldRow = ({
   };
 
   return (
-    <div
-      ref={isInFormSetting ? ref : null}
-      className={`flex gap-x-4 justify-center ${
-        isDragging ? "opacity-20 cursor-grabbing" : "opacity-100"
-      }  ${
-        isInFormSetting
-          ? "hover:outline hover:outline-primary hover:cursor-grab"
-          : ""
-      }  `}
-    >
-      {showLeftDroppableZone ? (
+    <div ref={isInFormSetting ? ref : null}>
+      <div
+        className={`flex gap-x-4 justify-center ${
+          isDragging ? "opacity-20 cursor-grabbing" : "opacity-100"
+        }  ${
+          isInFormSetting
+            ? "hover:outline hover:outline-primary hover:cursor-grab"
+            : ""
+        }`}
+      >
+        {showLeftDroppableZone ? (
+          <DroppableZone
+            accept={[FORM_TYPES.DATE, FORM_TYPES.TEXT, FORM_TYPES.SPIN]}
+            onDrop={(field: FormFieldMetadata) => {
+              if (onDrop) onDrop(field, rowIdx, DropPositionType.LEFT);
+            }}
+          />
+        ) : null}
+        {fields.map((field: FormFieldMetadata, index: number) =>
+          renderFormFields(field, index)
+        )}
+        {showRightDroppableZone ? (
+          <DroppableZone
+            accept={[FORM_TYPES.DATE, FORM_TYPES.TEXT, FORM_TYPES.SPIN]}
+            onDrop={(field: FormFieldMetadata) => {
+              if (onDrop) onDrop(field, rowIdx, DropPositionType.RIGHT);
+            }}
+          />
+        ) : null}
+      </div>
+      {showBottomDroppableZone ? (
         <DroppableZone
-          accept={[FORM_TYPES.DATE, FORM_TYPES.TEXT, FORM_TYPES.SPIN]}
-          onDrop={(field: FormFieldMetadata) => {
-            if (onDrop) onDrop(field, rowIdx, DropPositionType.LEFT);
+          className="my-2"
+          onDrop={(field) => {
+            if (onInsertAfterRow) onInsertAfterRow(field, rowIdx);
           }}
-        />
-      ) : null}
-      {fields.map((field: FormFieldMetadata, index: number) =>
-        renderFormFields(field, index)
-      )}
-      {showRightDroppableZone ? (
-        <DroppableZone
-          accept={[FORM_TYPES.DATE, FORM_TYPES.TEXT, FORM_TYPES.SPIN]}
-          onDrop={(field: FormFieldMetadata) => {
-            if (onDrop) onDrop(field, rowIdx, DropPositionType.RIGHT);
-          }}
+          accept={[FORM_TYPES.DATE, FORM_TYPES.SPIN, FORM_TYPES.TEXT]}
         />
       ) : null}
     </div>

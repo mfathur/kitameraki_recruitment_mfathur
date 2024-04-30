@@ -70,7 +70,9 @@ const useFormSetting = () => {
   const addFieldOnNewRow = (field: FormFieldMetadata) => {
     setOptionalFields((prev) => {
       let newState = [...prev];
-      if (field.id) {
+
+      const isNotNewField = field.id;
+      if (isNotNewField) {
         //  if existing field will change its position, remove from the prev position first
         newState = removeFieldFromPreviousPosition(newState, field);
       } else {
@@ -93,7 +95,8 @@ const useFormSetting = () => {
     setOptionalFields((prev) => {
       let newState = [...prev];
 
-      if (field.id) {
+      const isNotNewField = field.id;
+      if (isNotNewField) {
         //  if existing field will change its position, remove from the prev position first
         newState = removeFieldFromPreviousPosition(newState, field);
       } else {
@@ -129,13 +132,33 @@ const useFormSetting = () => {
     });
   };
 
-  const onSwapRow = (fromIdx: number, toIdx: number) => {
+  const handleSwapRow = (fromIdx: number, toIdx: number) => {
     setOptionalFields((prev) => {
       const newState = [...prev];
       const temp = newState[fromIdx];
       newState[fromIdx] = newState[toIdx];
       newState[toIdx] = temp;
       return newState;
+    });
+  };
+
+  const handleInsertAfterRow = (field: FormFieldMetadata, rowIdx: number) => {
+    setOptionalFields((prev) => {
+      let newState = [...prev];
+
+      const isNotNewField = field.id;
+      if (isNotNewField) {
+        newState = removeFieldFromPreviousPosition(newState, field);
+      } else {
+        // if it is the new field
+        const uid = nanoid();
+        field.id = uid;
+        field.label = `${field.type}-${uid}`;
+      }
+      // insert field
+      newState.splice(rowIdx + 1, 0, [field]);
+
+      return newState.filter((fieldsInRow) => fieldsInRow.length !== 0);
     });
   };
 
@@ -148,7 +171,8 @@ const useFormSetting = () => {
     addFieldOnExistingRow,
     saveFormOptionalFormat,
     handleFieldPropertiesChange,
-    onSwapRow,
+    handleSwapRow,
+    handleInsertAfterRow,
   };
 };
 

@@ -13,6 +13,7 @@ type Props = {
   onFieldValueChange?: (fieldId: string, value: unknown) => void;
   onFieldPropertiesChange?: (field: FormFieldMetadata, rowIdx: number) => void;
   onSwapRow?: (fromIdx: number, toIdx: number) => void;
+  onInsertAfterRow?: (field: FormFieldMetadata, rowIdx: number) => void;
 };
 
 const OptionalFields = ({
@@ -23,6 +24,7 @@ const OptionalFields = ({
   onFieldValueChange,
   onFieldPropertiesChange,
   onSwapRow,
+  onInsertAfterRow,
 }: Props) => {
   return (
     <div className="flex flex-col gap-y-0">
@@ -37,6 +39,7 @@ const OptionalFields = ({
           onFieldValueChange={onFieldValueChange}
           onFieldPropertiesChange={onFieldPropertiesChange}
           onSwapRow={onSwapRow}
+          onInsertAfterRow={onInsertAfterRow}
         />
       ))}
     </div>
