@@ -102,6 +102,29 @@ const FieldRow = ({
         setShowRightDroppableZone(false);
       }
     },
+    canDrop: (item, _) => {
+      const isNotAFieldRow = !Object.prototype.hasOwnProperty.call(
+        item,
+        "rowIdx"
+      );
+      // if the dragged item is not a row of fields
+      if (isNotAFieldRow) {
+        if (fields.length === 2) {
+          // if the row already contains 2 fields
+          const isFieldAlreadyExists = fields.find(
+            (existingField) =>
+              existingField.id === (item as FormFieldMetadata).id
+          );
+          // allow drop, to swap the position of the fields in a row
+          if (isFieldAlreadyExists) {
+            return true;
+          }
+          return false;
+        }
+      }
+
+      return true;
+    },
   });
 
   drag(drop(ref));
